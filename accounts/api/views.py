@@ -3,7 +3,7 @@ from rest_framework import viewsets
 from rest_framework import permissions
 from rest_framework.response import Response
 from rest_framework.decorators import action
-
+from django.contrib.auth import logout as django_logout
 from accounts.api.serializers import UserSerializer
 
 
@@ -20,10 +20,17 @@ class UserViewSet(viewsets.ModelViewSet):
     #
     #     return Response(serializer.data)
 
+
 class AccountViewSet(viewsets.ViewSet):
-    @action(methods=['get'], detail=False)
+    @action(methods=['GET'], detail=False)
     def login_status(self, request):
-         data = {'has_logged_in':request.user.is_authenticated}
-         if request.user.is_authenticated:
+        data = {'has_logged_in': request.user.is_authenticated}
+        if request.user.is_authenticated:
             data['user'] = UserSerializer(request.user).data
-         return Response(data)
+        return Response(data)
+
+
+    @action(methods=['POST'], detail=False)
+    def logout(self, request):
+        django_logout(request)
+        return Response({'Logout Success': True})
