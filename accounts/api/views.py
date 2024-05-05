@@ -29,7 +29,6 @@ class AccountViewSet(viewsets.ViewSet):
             data['user'] = UserSerializer(request.user).data
         return Response(data)
 
-
     @action(methods=['POST'], detail=False)
     def logout(self, request):
         django_logout(request)
