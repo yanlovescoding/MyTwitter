@@ -3,8 +3,12 @@ from rest_framework import viewsets
 from rest_framework import permissions
 from rest_framework.response import Response
 from rest_framework.decorators import action
-from django.contrib.auth import logout as django_logout
-from accounts.api.serializers import UserSerializer
+from django.contrib.auth import (
+    logout as django_logout,
+    login as django_login,
+    authenticate as django_authenticate,
+)
+from accounts.api.serializers import UserSerializer, LoginSerializer
 
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -22,12 +26,39 @@ class UserViewSet(viewsets.ModelViewSet):
 
 
 class AccountViewSet(viewsets.ViewSet):
+    # permission_classes = [permissions.AllowAny]
+    serializer_class = LoginSerializer
+
     @action(methods=['GET'], detail=False)
     def login_status(self, request):
         data = {'has_logged_in': request.user.is_authenticated}
         if request.user.is_authenticated:
             data['user'] = UserSerializer(request.user).data
         return Response(data)
+
+
+    @action(methods=['POST'], detail=False)
+    def login(self, request):
+        serializer = LoginSerializer(data=request.data)
+        if not serializer.is_valid():
+            return Response({
+                "success": False,
+                "message": "Please check input",
+                "errors": serializer.errors,
+            }, status=400)
+        username = serializer.validated_data['username']
+        password = serializer.validated_data['password']
+        user = django_authenticate(username=username, password=password)
+        if not user or user.is_anonymous:
+            return Response({
+                "success": False,
+                "message": "username and password does not match",
+            }, status=400)
+        django_login(request, user)
+        return Response({
+            "success": True,
+            "user": UserSerializer(instance=user).data,
+        })
 
     @action(methods=['POST'], detail=False)
     def logout(self, request):
