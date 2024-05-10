@@ -8,7 +8,11 @@ from django.contrib.auth import (
     login as django_login,
     authenticate as django_authenticate,
 )
-from accounts.api.serializers import UserSerializer, LoginSerializer
+from accounts.api.serializers import (
+    UserSerializer,
+    LoginSerializer,
+    SignupSerializer,
+)
 
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -27,7 +31,7 @@ class UserViewSet(viewsets.ModelViewSet):
 
 class AccountViewSet(viewsets.ViewSet):
     # permission_classes = [permissions.AllowAny]
-    serializer_class = LoginSerializer
+    serializer_class = SignupSerializer
 
     @action(methods=['GET'], detail=False)
     def login_status(self, request):
@@ -64,3 +68,20 @@ class AccountViewSet(viewsets.ViewSet):
     def logout(self, request):
         django_logout(request)
         return Response({'Logout Success': True})
+
+    @action(methods=['POST'], detail=False)
+    def signup(self, request):
+        serializer = SignupSerializer(data=request.data)
+        if not serializer.is_valid():
+            return Response({
+                "success": False,
+                "message": "Please check input",
+                "errors": serializer.errors,
+            }, status=400)
+        user=serializer.save()
+        django_login(request, user)
+        return Response({
+            "success": True,
+            "user": UserSerializer(instance=user).data,
+        })
+
