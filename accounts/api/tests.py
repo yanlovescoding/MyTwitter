@@ -2,7 +2,6 @@ from django.test import TestCase
 from rest_framework.test import APIClient
 from django.contrib.auth.models import User
 
-
 LOGIN_URL = '/api/accounts/login/'
 LOGOUT_URL = '/api/accounts/logout/'
 SIGNUP_URL = '/api/accounts/signup/'
@@ -22,7 +21,17 @@ class AccountApiTests(TestCase):
     def createUser(self, username, email, password):
         return User.objects.create_user(username, email, password)
 
-    def test_login(self):
+    def test_login_successfully(self):
+        response = self.client.post(LOGIN_URL, {
+            'username': self.user.username,
+            'password': 'test123',
+        })
+        self.assertEqual(response.status_code, 200)
+        # Confirm login status is true
+        response = self.client.get(LOGIN_STATUS_URL)
+        self.assertEqual(response.data['has_logged_in'], True)
+
+    def test_login_but_use_wrong_http_method(self):
         # case one: get
         response = self.client.get(LOGIN_URL, {
             'username': self.user.username,
@@ -30,29 +39,31 @@ class AccountApiTests(TestCase):
         })
         self.assertEqual(response.status_code, 405)
 
+    def test_login_with_wrong_password(self):
         response = self.client.post(LOGIN_URL, {
-            'username': self.user.username,
-            'password': 'test123',
-        })
-        self.assertEqual(response.status_code, 200)
-
-        # case two: wrong password
-        response = self.client.get(LOGIN_URL, {
             'username': self.user.username,
             'password': "test12345890",
         })
-        self.assertEqual(response.status_code, 405)
-        response = self.client.post(LOGIN_URL, {
-            'username': self.user.username,
-            'password': 'test123',
-        })
-        self.assertEqual(response.status_code, 200)
-        self.assertNotEqual(response.data['user'], None)
-        self.assertEqual(response.data['user']['email'], 'unitTest@gmail.com')
 
-        # Confirm login status is true
-        response = self.client.get(LOGIN_STATUS_URL)
-        self.assertEqual(response.data['has_logged_in'], True)
+        self.assertEqual(response.json(), {'success': False, 'message': 'username and password does not match'})
+        self.assertEqual(response.status_code, 400)
+
+    def test_login_with_username_not_existed(self):
+        response = self.client.post(LOGIN_URL, {
+            'username': "fake_username",
+            'password': "test12345890",
+        })
+
+        self.assertEqual(response.json(), {
+            "success": False,
+            "message": "Please check input.",
+            "errors": {
+                "username": [
+                    "User does not exist."
+                ]
+            }
+        })
+        self.assertEqual(response.status_code, 400)
 
     def test_logout(self):
         # login
