@@ -36,13 +36,12 @@ class AccountViewSet(viewsets.ViewSet):
     @action(methods=['GET'], detail=False)
     def login_status(self, request):
         data = {'has_logged_in': request.user.is_authenticated,
-                'ip':request.META['REMOTE_ADDR'],
+                'ip': request.META['REMOTE_ADDR'],
                 }
 
         if request.user.is_authenticated:
             data['user'] = UserSerializer(request.user).data
         return Response(data)
-
 
     @action(methods=['POST'], detail=False)
     def login(self, request):
@@ -55,6 +54,7 @@ class AccountViewSet(viewsets.ViewSet):
             }, status=400)
         username = serializer.validated_data['username']
         password = serializer.validated_data['password']
+
         user = django_authenticate(username=username, password=password)
         if not user or user.is_anonymous:
             return Response({
@@ -81,10 +81,9 @@ class AccountViewSet(viewsets.ViewSet):
                 "message": "Please check input",
                 "errors": serializer.errors,
             }, status=400)
-        user=serializer.save()
+        user = serializer.save()
         django_login(request, user)
         return Response({
             "success": True,
             "user": UserSerializer(instance=user).data,
         })
-
