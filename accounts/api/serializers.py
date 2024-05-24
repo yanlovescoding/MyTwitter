@@ -7,6 +7,11 @@ class UserSerializer(serializers.ModelSerializer):
         model = User
         fields = ['username', 'email']
 
+class UserSerializerForFriendship(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['username', 'id']
+
 class LoginSerializer(serializers.Serializer):
     username = serializers.CharField(allow_blank=False)
     password = serializers.CharField(allow_blank=False)
