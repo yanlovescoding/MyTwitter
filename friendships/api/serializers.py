@@ -9,3 +9,11 @@ class FollowSerializer(serializers.ModelSerializer):
     class Meta:
         model = Friendships
         fields = ('user', 'created_at')
+
+class FollowingSerializer(serializers.ModelSerializer):
+    user = UserSerializerForFriendship(source='to_user')
+    created_at = serializers.DateTimeField()
+
+    class Meta:
+        model = Friendships
+        fields = ('user', 'created_at')

@@ -7,6 +7,7 @@ from rest_framework.decorators import action
 from friendships.models import Friendships
 from friendships.api.serializers import (
     FollowSerializer,
+    FollowingSerializer,
 )
 
 
@@ -21,6 +22,16 @@ class FriendshipViewSet(viewsets.ModelViewSet):
         serializer = FollowSerializer(friendships, many=True)
         return Response(
             {'followers': serializer.data},
+            status=200,
+        )
+
+    @action(methods=['GET'], detail=True, permission_classes=[AllowAny])
+    def followings(self, request, pk):
+        # GET /api/friendships/pk/followings/ , as a current user, pk is following followers, I would like to check how many followers pk is following
+        friendships = Friendships.objects.filter(from_user_id=pk).order_by('-created_at')
+        serializer = FollowingSerializer(friendships, many=True)
+        return Response(
+            {'followings': serializer.data},
             status=200,
         )
 
