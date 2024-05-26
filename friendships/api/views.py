@@ -47,7 +47,7 @@ class FriendshipViewSet(viewsets.ModelViewSet):
         serializer = FriendshipSerializerForCreate(
             data={
                 'from_user_id': request.user.id,
-                'to_user_id': pk,
+                'to_user_id': int(pk),
             }
         )
         if not serializer.is_valid():
