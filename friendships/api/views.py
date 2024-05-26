@@ -63,6 +63,19 @@ class FriendshipViewSet(viewsets.ModelViewSet):
             status=201
         )
 
+    @action(methods=['POST'], detail=True, permission_classes=[IsAuthenticated])
+    def unfollow(self, request, pk):
+        if request.user.id == int(pk):
+            return Response({
+                'success': False,
+                'message': 'You cannot unfollow yourself',
+            }, status=400)
+        deleted, _ = Friendships.objects.filter(
+            from_user=request.user,
+            to_user=pk,
+        ).delete()
+        return Response({'success': True, 'deleted': deleted})
+
     def list(self, request, *args, **kwargs):
         return Response(
             {'message': 'This is friendship data'})
