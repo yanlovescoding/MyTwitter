@@ -4,7 +4,7 @@ from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
 from rest_framework.decorators import action
 from tweets.models import Tweet
-from newsfeeds.services import fanout_to_followers
+from newsfeeds.services import NewsFeedService
 from django.contrib.auth import (
     logout as django_logout,
     login as django_login,
@@ -53,7 +53,7 @@ class TweetViewSet(viewsets.GenericViewSet):
             }, status=400)
         # Save() will trigger create() method in TweetSerializerForCreate
         tweet = serializer.save()
-        fanout_to_followers(tweet)
+        NewsFeedService.fanout_to_followers(tweet)
         return Response(TweetSerializer(tweet).data, status=201)
 
 
