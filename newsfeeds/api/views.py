@@ -12,7 +12,6 @@ class NewsFeedsViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         return NewsFeed.objects.all()
     def list(self, request, *args, **kwargs):
-        print(request.user.id)
         serializer = NewfeedsSerializer(self.get_queryset().filter(user=request.user), many=True)
         return Response(
             {
