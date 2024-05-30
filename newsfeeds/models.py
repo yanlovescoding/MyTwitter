@@ -4,6 +4,7 @@ from tweets.models import Tweet
 
 
 class NewsFeed(models.Model):
+    # user is the user who is following some people, user == from_user
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     tweet = models.CharField(Tweet, max_length=255,null=True)
     created_at = models.DateTimeField(auto_now_add=True)
