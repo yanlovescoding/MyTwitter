@@ -66,3 +66,9 @@ class CommentViewSet(viewsets.GenericViewSet):
             {'tweets': serializer.data},
             status=200
         )
+
+    def destroy(self, request, *args, **kwargs):
+        comment = self.get_object()
+        comment.delete()
+        return Response({'success': True}, status=200)
+
