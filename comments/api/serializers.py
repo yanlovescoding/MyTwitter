@@ -13,7 +13,7 @@ class CommentSerializer(serializers.ModelSerializer):
     user = UserSerializer()
     class Meta:
         model = Comment
-        fields = ('user', 'tweet', 'content', 'created_at', 'updated_at')
+        fields = ('user', 'tweet_id', 'content', 'created_at', 'updated_at')
 
 class CommentSerializerForCreate(serializers.ModelSerializer):
     tweet_id = serializers.IntegerField()
@@ -38,3 +38,11 @@ class CommentSerializerForCreate(serializers.ModelSerializer):
             tweet_id=tweet_id,
             content=content
         )
+class CommentSerializerForUpdate(serializers.ModelSerializer):
+    class Meta:
+        model = Tweet
+        fields = ('content',)
+    def update(self, instance, validated_data):
+        instance.content = validated_data['content']
+        instance.save()
+        return instance
