@@ -24,7 +24,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-v06u8uvpt-u0mnp&m7(r-8as&66=%=atn!y+=(hchbcqg+2u6x'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['127.0.0.1','localhost']
 INTERNAL_IPS = ['127.0.0.1','localhost']
@@ -87,21 +87,6 @@ TEMPLATES = [
 WSGI_APPLICATION = 'myTwitter.wsgi.application'
 
 
-# Database
-# https://docs.djangoproject.com/en/5.0/ref/settings/#databases
-
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'myTwitterDb',
-        'Host':'127.0.0.1',
-        'PORT':'3306',
-        'USER':'root',
-        'PASSWORD': 'cc2255831@1'
-    }
-}
-
-
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
 
@@ -145,3 +130,8 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 pymysql.install_as_MySQLdb()
+
+try:
+    from .local_settings import *
+except:
+    pass
