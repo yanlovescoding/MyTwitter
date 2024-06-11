@@ -4,6 +4,7 @@ from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
 from rest_framework.decorators import action
 from tweets.models import Tweet
+from comments.models import Comment
 from comments.api.serializers import (
     CommentSerializer,
     CommentSerializerForCreate,
@@ -15,13 +16,33 @@ from tweets.api.serializers import (
 
 
 class CommentViewSet(viewsets.GenericViewSet):
-    queryset = Tweet.objects.all()
+    queryset = Comment.objects.all()
+    filterset_fields = ('tweet_id',)
     serializer_class = CommentSerializerForUpdate
 
     def get_permissions(self):
         if self.action == 'list':
             return [AllowAny()]
         return [IsAuthenticated()]
+
+    # api/comments/?tweet_id=8 => list out all comments under then tweet_id 8
+    def list(self, request, *args, **kwargs):
+        if 'tweet_id' not in request.query_params:
+            return Response(
+                {
+                    'message': 'missing tweet_id in request',
+                    'success': False,
+                },
+                status=400,
+            )
+        queryset = self.get_queryset()
+        comments = self.filter_queryset(queryset).order_by('created_at')
+        print(comments.count())
+        serializer = CommentSerializer(comments, many=True)
+        return Response(
+            {'comments': serializer.data},
+            status=200
+        )
 
     def create(self, request):
         data = {
@@ -57,18 +78,7 @@ class CommentViewSet(viewsets.GenericViewSet):
             status=200,
         )
 
-    def list(self, request, *args, **kwargs):
-        tweets = Tweet.objects.filter(
-            user_id=request.user.id
-        ).order_by('-created_at')
-        serializer = TweetSerializer(tweets, many=True)
-        return Response(
-            {'tweets': serializer.data},
-            status=200
-        )
-
     def destroy(self, request, *args, **kwargs):
         comment = self.get_object()
         comment.delete()
         return Response({'success': True}, status=200)
-
