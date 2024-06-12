@@ -16,7 +16,6 @@ from tweets.api.serializers import (
 
 
 class CommentViewSet(viewsets.GenericViewSet):
-    queryset = Comment.objects.all()
     filterset_fields = ('tweet_id',)
     serializer_class = CommentSerializerForUpdate
 
@@ -35,7 +34,7 @@ class CommentViewSet(viewsets.GenericViewSet):
                 },
                 status=400,
             )
-        queryset = self.get_queryset()
+        queryset = Comment.objects.all()
         comments = self.filter_queryset(queryset).order_by('created_at')
         print(comments.count())
         serializer = CommentSerializer(comments, many=True)

@@ -13,7 +13,6 @@ from friendships.api.serializers import (
 
 
 class FriendshipViewSet(viewsets.ModelViewSet):
-    queryset = User.objects.all()
     serializer_class = FriendshipSerializerForCreate
 
     @action(methods=['GET'], detail=True, permission_classes=[AllowAny])
