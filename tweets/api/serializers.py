@@ -16,7 +16,7 @@ class TweetSerializer(serializers.ModelSerializer):
 
 class TweetSerializerWithComment(TweetSerializer):
     user = UserSerializer()
-    comments = CommentSerializer(source ='comment_set',many=True)
+    comments = CommentSerializer(many=True)
     class Meta:
         model = Tweet
         fields = ('id', 'user', 'created_at', 'content', 'comments')

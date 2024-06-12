@@ -18,7 +18,6 @@ from tweets.api.serializers import (
 
 
 class TweetViewSet(viewsets.GenericViewSet):
-    queryset = Tweet.objects.all()
     serializer_class = TweetSerializerForCreate
 
     def get_permissions(self):
