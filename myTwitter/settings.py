@@ -69,34 +69,6 @@ MIDDLEWARE = [
     "debug_toolbar.middleware.DebugToolbarMiddleware",
 ]
 
-LOGGING = {
-    'version': 1,
-    'filters': {
-        'require_debug_true': {
-            '()': 'django.utils.log.RequireDebugTrue',
-        }
-    },
-    'handlers': {
-        'console': {
-            'level': 'DEBUG',
-            'filters': ['require_debug_true'],
-            'class': 'logging.StreamHandler',
-        }
-    },
-    'loggers': {
-        'django.db.backends': {
-            'level': 'DEBUG',
-            'handlers': ['console'],
-        }
-    },
-    'formatters': {
-            'django.server': {
-                '()': 'django.utils.log.ServerFormatter',
-                'format': '[%(server_time)s] %(message)s',
-            }
-        },
-}
-
 ROOT_URLCONF = 'myTwitter.urls'
 
 TEMPLATES = [

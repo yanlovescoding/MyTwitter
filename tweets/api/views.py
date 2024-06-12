@@ -13,6 +13,7 @@ from django.contrib.auth import (
 from tweets.api.serializers import (
     TweetSerializer,
     TweetSerializerForCreate,
+    TweetSerializerWithComment,
 )
 
 
@@ -34,7 +35,7 @@ class TweetViewSet(viewsets.GenericViewSet):
         tweets = Tweet.objects.filter(
             user_id=request.query_params['user_id']
         ).order_by('-created_at')
-        serializer = TweetSerializer(tweets, many=True)
+        serializer = TweetSerializerWithComment(tweets, many=True)
         return Response(
             {'tweets': serializer.data},
             status=200
