@@ -2,15 +2,14 @@ from rest_framework import serializers,exceptions
 from django.contrib.auth.models import User
 from comments.models import Comment
 from tweets.models import Tweet
-from tweets.api.serializers import (
-    TweetSerializer,
-)
 from accounts.api.serializers import (
     UserSerializer,
 )
 
+
 class CommentSerializer(serializers.ModelSerializer):
     user = UserSerializer()
+
     class Meta:
         model = Comment
         fields = ('user', 'tweet_id', 'content', 'created_at', 'updated_at')
@@ -23,7 +22,6 @@ class CommentSerializerForCreate(serializers.ModelSerializer):
         fields = ('content', 'tweet_id','user_id')
 
     def validate(self, data):
-        tweet_id = data['tweet_id']
         if not Tweet.objects.filter(id=tweet_id).exists():
             raise exceptions.ValidationError({
                 'message': 'Tweet does not exist'
