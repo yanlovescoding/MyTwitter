@@ -5,6 +5,7 @@ from django.db import models
 
 
 class Like(models.Model):
+    # object_id is tweet_id or comment_id
     object_id = models.PositiveIntegerField()
     content_type = models.ForeignKey(
         ContentType,
