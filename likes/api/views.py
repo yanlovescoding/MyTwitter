@@ -53,9 +53,9 @@ class LikeViewSet(viewsets.GenericViewSet):
                 'message': "Please check input",
                 'errors': serializer.errors,
             }, status=400)
-        like = serializer.cancel()
+        serializer.cancel()
         return Response(
-            LikeSerializerForCancel(like).data,
+            {"Like has been cancelled sucessfully": True},
             status=200,
         )
     def list(self, request, *args, **kwargs):
